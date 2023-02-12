@@ -11,25 +11,25 @@ describe("Block tests", () => {
   test("returns true", () => {
     const block = new Block(1, genesis.hash, "fake data")
     const valid = block.isValid(genesis.hash, genesis.index);
-    expect(valid).toBeTruthy();
+    expect(valid.success).toBeTruthy();
   })
 
   test("returns false to hash", () => {
     const block = new Block(1, "", "fake data")
     const valid = block.isValid(genesis.hash, genesis.index);
-    expect(valid).toBeFalsy();
+    expect(valid.success).toBeFalsy();
   })
 
   test("returns false to index", () => {
     const block = new Block(-1, genesis.hash, "fake data")
     const valid = block.isValid(genesis.hash, genesis.index);
-    expect(valid).toBeFalsy();
+    expect(valid.success).toBeFalsy();
   })
 
   test("returns false to previousHash", () => {
     const block = new Block(1, "invalid.hash", "fake data")
     const valid = block.isValid(genesis.hash, genesis.index);
-    expect(valid).toBeFalsy();
+    expect(valid.success).toBeFalsy();
   })
 
   test("returns false to timestamp", () => {
@@ -37,19 +37,19 @@ describe("Block tests", () => {
     block.timestamp = -1
     block.hash = block.getHash();
     const valid = block.isValid(genesis.hash, genesis.index); 
-    expect(valid).toBeFalsy();
+    expect(valid.success).toBeFalsy();
   })
 
   test("returns false to hash", () => {
     const block = new Block(1, genesis.hash, "fake data")
     block.hash = ''
     const valid = block.isValid(genesis.hash, genesis.index); 
-    expect(valid).toBeFalsy();
+    expect(valid.success).toBeFalsy();
   })
 
   test("returns false to data", () => {
     const block = new Block(1, genesis.hash, "")
     const valid = block.isValid(genesis.hash, genesis.index); 
-    expect(valid).toBeFalsy();
+    expect(valid.success).toBeFalsy();
   })
 })

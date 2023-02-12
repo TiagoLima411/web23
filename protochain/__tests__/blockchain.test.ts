@@ -11,7 +11,7 @@ describe("Blockchain tests", () => {
   describe(".isValid", () => {
     test("returns true", () => {
       const blockchain = new Blockchain();
-      expect(blockchain.isValid()).toEqual(true)
+      expect(blockchain.isValid().success).toEqual(true)
     })
 
     test("returns true with tree blocks", () => {
@@ -21,7 +21,7 @@ describe("Blockchain tests", () => {
       const lastBlock = new Block(2, secondBlock.previousHash, "more data");
       blockchain.addBlock(lastBlock);
       
-      expect(blockchain.isValid()).toEqual(true)
+      expect(blockchain.isValid().success).toEqual(true)
     })
 
     test("returns false", () => {
@@ -31,7 +31,7 @@ describe("Blockchain tests", () => {
       
       blockchain.blocks[1].data = "invalid data"
       
-      expect(blockchain.isValid()).toEqual(false)
+      expect(blockchain.isValid().success).toEqual(false)
     })
   })
 
@@ -39,13 +39,13 @@ describe("Blockchain tests", () => {
     test("returns true", ()=> {
       const blockchain = new Blockchain();
       const result = blockchain.addBlock(new Block(1, blockchain.blocks[0].hash, "New data"));
-      expect(result).toEqual(true)
+      expect(result.success).toEqual(true)
     })
 
     test("returns false", ()=> {
       const blockchain = new Blockchain();
       const result = blockchain.addBlock(new Block(-1, blockchain.blocks[0].hash, "New data"));
-      expect(result).toEqual(false)
+      expect(result.success).toEqual(false)
     })
   })
 

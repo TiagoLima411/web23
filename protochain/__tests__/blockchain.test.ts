@@ -36,18 +36,25 @@ describe("Blockchain tests", () => {
   })
 
   describe('.addBlock', () => {
-    test("returns true", ()=> {
+    test("returns true", () => {
       const blockchain = new Blockchain();
       const result = blockchain.addBlock(new Block(1, blockchain.blocks[0].hash, "New data"));
       expect(result.success).toEqual(true)
     })
 
-    test("returns false", ()=> {
+    test("returns false", () => {
       const blockchain = new Blockchain();
       const result = blockchain.addBlock(new Block(-1, blockchain.blocks[0].hash, "New data"));
       expect(result.success).toEqual(false)
     })
   })
 
+  describe(".getBlock", () => {
+    test("returns block", () => {
+      const blochain = new Blockchain();
+      const block = blochain.getBlock(blochain.blocks[0].hash);
+      expect(block).toBeTruthy();
+    })
+  })
 
 })

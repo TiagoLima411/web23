@@ -12,7 +12,7 @@ export class Blockchain {
    * Creates a new blockchain
   */
   constructor(){
-    this.blocks = [new Block(0, '', `Genesis Block: created at: ${new Date().toISOString()}`)]
+    this.blocks = [new Block(<Block>{index: 0, previousHash: '', data: `Genesis Block: created at: ${new Date().toISOString()}`})]
     this.nextIndex++;
   }
 

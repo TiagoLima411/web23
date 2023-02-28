@@ -15,7 +15,16 @@ describe('Blockchain Server Tests', () => {
       expect(response.status).toEqual(200)
       expect(response.body.isValid.success).toEqual(true)
     })
-  })
+  });
+
+  describe('GET /blocks/next', () => {
+    test('returns genesis block', async () => {
+      const response = await request(app).get('/blocks/next');
+  
+      expect(response.status).toEqual(200)
+      expect(response.body.index).toEqual(1)
+    })
+  });
 
   describe('GET /blocks/:indexOrHash', () => {
     test('returns genesis block', async () => {
@@ -37,7 +46,7 @@ describe('Blockchain Server Tests', () => {
   
       expect(response.status).toEqual(404)
     })
-  })
+  });
 
   describe('POST /blocks', () => {
     test('returns created', async () => {
@@ -57,5 +66,5 @@ describe('Blockchain Server Tests', () => {
       const response = await request(app).post('/blocks/').send(block);
       expect(response.status).toEqual(400);
     })
-  })
+  });
 })

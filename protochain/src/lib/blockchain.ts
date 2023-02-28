@@ -1,4 +1,5 @@
 import { Block } from "./block";
+import BlockInfo from "./blockinfo";
 import Validation from "./validation";
 
 /**
@@ -8,6 +9,7 @@ export class Blockchain {
   blocks: Block[];
   nextIndex: number = 0;
   static readonly DIFFICULTY_FACTOR = 5;
+  static readonly MAX_DIFFICULTY = 62;
   
   /**
    * Creates a new blockchain
@@ -50,5 +52,20 @@ export class Blockchain {
         return new Validation(false, `Invalid Block: ${currentBlock.index}: ${validation.message}`);
     }
     return new Validation();
+  }
+
+  getFeePerTx() : number {
+    return 1;
+  }
+
+  getNextBlock() : BlockInfo {
+    return {
+      index: this.blocks.length,
+      previousHash: this.getLastBlock().hash,
+      difficulty: this.getDifficulty(),
+      maxDifficulty: Blockchain.MAX_DIFFICULTY,
+      feePerTx: this.getFeePerTx(),
+      data: new Date().toISOString(),
+    }
   }
 }

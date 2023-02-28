@@ -59,4 +59,12 @@ describe("Blockchain tests", () => {
     })
   })
 
+  describe(".getNextBlock", () => {
+    test("returns expected index", () => {
+      const blochain = new Blockchain();
+      const info = blochain.getNextBlock();
+      expect(info.index).toEqual(1);
+    })
+  })
+
 })

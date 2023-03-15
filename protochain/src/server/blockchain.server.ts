@@ -7,8 +7,10 @@ const PORT: number = 3000;
 
 const app = express();
 
+/* c8 ignore start */
 if (process.argv.includes("--run"))
   app.use(morgan('tiny'));
+/* c8 ignore end */
 
 app.use(express.json());
 

@@ -1,5 +1,7 @@
 import SHA256 from "crypto-js/sha256";
 import BlockInfo from "./blockinfo";
+import Transaction from "./transaction";
+import { TransactionType } from "./transaction-type";
 import Validation from "./validation";
 
 /**
@@ -11,7 +13,7 @@ export class Block {
   timestamp : number;
   hash: string;
   previousHash: string;
-  data: string;
+  transactions: Transaction[];
   nonce: number;
   miner: string;
   
@@ -23,14 +25,22 @@ export class Block {
     this.index = block?.index || 0;
     this.timestamp = block?.timestamp || Date.now();
     this.previousHash = block?.previousHash || "";
-    this.data = block?.data || "";
+
+    this.transactions = block?.transactions
+      ? block?.transactions.map(tx => new Transaction(tx)) 
+      : [] as Transaction[];
+  
     this.nonce = block?.nonce || 0;
     this.miner = block?.miner || "";
     this.hash = block?.hash || this.getHash();
   }
 
   getHash(){
-    return SHA256(this.index + this.data + this.timestamp + this.previousHash + this.nonce + this.miner).toString();
+    const txs = this.transactions && this.transactions.length
+      ? this.transactions.map(tx => tx.hash).reduce((a, b) => a + b)
+      : "";
+
+    return SHA256(this.index + txs + this.timestamp + this.previousHash + this.nonce + this.miner).toString();
   }
 
   /**
@@ -60,8 +70,18 @@ export class Block {
    * @returns Returns if the block is valid
   */
   isValid(previousHash: string, previousIndex: number, difficulty: number): Validation {
+    if (this.transactions && this.transactions.length) {
+      if (this.transactions.filter(tx => tx.type === TransactionType.FEE).length > 1)
+        return new Validation(false, "Too many fees");
+
+      const validations = this.transactions.map(tx => tx.isValid());
+      const errors = validations.filter(v => !v.success).map(v => v.message);
+      
+      if (errors.length > 0)
+        return new Validation(false, "Invalid block due to invalid tx: " + errors.reduce((a, b) => a + b));
+    }
+    
     if (previousIndex !== this.index - 1) return new Validation(false, "Invalid index");
-    if (!this.data) return new Validation(false, "Invalid data");
     if (this.timestamp < 1) return new Validation(false, "Invalid timestamp");
     if (this.previousHash !== previousHash) return new Validation(false, "Invalid previous hash");;
     if (!this.nonce || !this.miner) return new Validation(false, "No mined.");
@@ -77,7 +97,7 @@ export class Block {
     const block = new Block();
     block.index = blockInfo.index;
     block.previousHash = blockInfo.previousHash;
-    block.data = blockInfo.data;
+    block.transactions = blockInfo.transactions;
     return block;
   }
 }

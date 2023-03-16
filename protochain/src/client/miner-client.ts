@@ -17,7 +17,7 @@ let totalMined = 0;
 
 async function mine() {
   console.log("Getting next block info ...")
-  const { data } = await axios.get(`${HOST}/blocks/next`);
+  const { data } = await axios.get(`${HOST}blocks/next`);
   const blockInfo = data as BlockInfo;
 
   const newBlock = Block.fromBlockInfo(blockInfo);
@@ -29,7 +29,7 @@ async function mine() {
   newBlock.mine(blockInfo.difficulty, minerWallet.publicKey)
   
   try {
-    await axios.post(`${HOST}/blocks`, newBlock)
+    await axios.post(`${HOST}blocks`, newBlock)
     console.log("Block sent and accepted!");
     totalMined++;
     console.log("Total mined blocks: "+ totalMined)

@@ -31,7 +31,8 @@ export default {
   // An array of regexp pattern strings used to skip coverage collection
   coveragePathIgnorePatterns: [
     "/node_modules/",
-    "protochain/src/lib/blockinfo.ts"
+    "/src/lib/blockinfo.ts",
+    "/src/lib/transaction-type.ts"
   ],
 
   // Indicates which provider should be used to instrument code for coverage

@@ -32,7 +32,8 @@ export default {
   coveragePathIgnorePatterns: [
     "/node_modules/",
     "/src/lib/blockinfo.ts",
-    "/src/lib/transaction-type.ts"
+    "/src/lib/transaction-type.ts",
+    "/src/lib/transaction-search.ts"
   ],
 
   // Indicates which provider should be used to instrument code for coverage

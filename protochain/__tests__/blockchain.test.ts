@@ -42,12 +42,17 @@ describe("Blockchain tests", () => {
 
     test("returns false", () => {
       const blockchain = new Blockchain();
+
+      const tx = new Transaction({
+        data: "New data"
+      } as Transaction);
+
+      blockchain.mempool.push(tx);
+
       const secondBlock = new Block({
         index: 1, 
         previousHash: blockchain.blocks[0].hash, 
-        transactions: [new Transaction({
-          data: "second block"
-        } as Transaction)],
+        transactions: [tx],
       } as Block);
       blockchain.addBlock(secondBlock)
       
@@ -57,17 +62,124 @@ describe("Blockchain tests", () => {
     })
   })
 
+  describe('.addTransaction', () => {
+    test("returns true", () => {
+      const blockchain = new Blockchain();
+
+      const tx = new Transaction({
+        data: "New data",
+        hash: "xyz"
+      } as Transaction);
+
+      const validation = blockchain.addTransaction(tx);
+      
+      expect(validation.success).toEqual(true);
+    })
+
+    test("returns false with invalid data", () => {
+      const blockchain = new Blockchain();
+
+      const tx = new Transaction({
+        data: "",
+        hash: "xyz"
+      } as Transaction);
+
+      const validation = blockchain.addTransaction(tx);
+      
+      expect(validation.success).toEqual(false);
+    })
+
+    test("returns false with duplicated in blockchain", () => {
+      const blockchain = new Blockchain();
+
+      const tx = new Transaction({
+        data: "tx1",
+        hash: "xyz"
+      } as Transaction);
+
+      blockchain.blocks.push(new Block({
+        transactions: [tx]
+      } as Block));
+
+      const validation = blockchain.addTransaction(tx);
+      expect(validation.success).toEqual(false);
+    })
+
+    test("returns false with duplicated in mempool", () => {
+      const blockchain = new Blockchain();
+  
+      const tx = new Transaction({
+        data: "tx1",
+        hash: "xyz"
+      } as Transaction);
+  
+      blockchain.mempool.push(tx)
+  
+      const validation = blockchain.addTransaction(tx);
+      expect(validation.success).toEqual(false);
+    })
+  })
+
+  describe('.getTransaction', () => {
+    test("returns expected mempool index", () => {
+      const blockchain = new Blockchain();
+
+      const tx = new Transaction({
+        data: "New data",
+        hash: "abc"
+      } as Transaction);
+
+      blockchain.mempool.push(tx);
+
+      const result = blockchain.getTransaction("abc");
+      
+      expect(result.mempoolIndex).toEqual(0)
+    })
+
+    test("returns expected blockchain index", () => {
+      const blockchain = new Blockchain();
+
+      const tx = new Transaction({
+        data: "New data",
+        hash: "xyz"
+      } as Transaction);
+
+      blockchain.blocks.push(new Block({
+        transactions: [tx]
+      } as Block));
+
+      const result = blockchain.getTransaction("xyz");
+      
+      expect(result.blockIndex).toEqual(1)
+    })
+
+    test("returns not found transaction", () => {
+      const blockchain = new Blockchain();
+
+      const result = blockchain.getTransaction("xyz");
+      
+      expect(result.blockIndex).toEqual(-1);
+      expect(result.mempoolIndex).toEqual(-1);
+    })
+  })
+
   describe('.addBlock', () => {
     test("returns true", () => {
       const blockchain = new Blockchain();
+      
+      const tx = new Transaction({
+        data: "New data"
+      } as Transaction);
+
+      blockchain.mempool.push(tx);
+
       const result = blockchain.addBlock(new Block({
         index: 1, 
         previousHash: blockchain.blocks[0].hash, 
-        transactions: [new Transaction({
-          data: "New data"
-        } as Transaction)],
+        transactions: [tx],
       } as Block));
-      expect(result.success).toEqual(true)
+      console.log(result.message)
+      expect(result.success).toEqual(true);
     })
 
     test("returns false", () => {
@@ -94,8 +206,16 @@ describe("Blockchain tests", () => {
   describe(".getNextBlock", () => {
     test("returns expected index", () => {
       const blochain = new Blockchain();
+      blochain.mempool.push(new Transaction());
+
       const info = blochain.getNextBlock();
-      expect(info.index).toEqual(1);
+      expect(info ? info.index : 0).toEqual(1);
+    })
+
+    test("returns null", () => {
+      const blochain = new Blockchain();
+      const info = blochain.getNextBlock();
+      expect(info).toBeNull();
     })
   })
 

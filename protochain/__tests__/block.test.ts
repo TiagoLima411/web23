@@ -2,9 +2,11 @@ import { describe, test, expect, beforeAll, jest } from "@jest/globals"
 import { Block } from "../src/lib/block"
 import BlockInfo from "../src/lib/blockinfo";
 import Transaction from "../src/lib/transaction";
+import TransactionInput from "../src/lib/transaction-input";
 import { TransactionType } from "../src/lib/transaction-type";
 
-jest.mock("../src/lib/transaction")
+jest.mock("../src/lib/transaction");
+jest.mock("../src/lib/transaction-input");
 
 describe("Block tests", () => {
 
@@ -15,7 +17,7 @@ describe("Block tests", () => {
   beforeAll(() => {
     genesis = new Block({
       transactions: [new Transaction({
-        data: "Genesis block"
+        txInput: new TransactionInput(),
       } as Transaction)]
     } as Block)
   })
@@ -25,7 +27,7 @@ describe("Block tests", () => {
       index: 1, 
       previousHash: genesis.hash, 
       transactions: [new Transaction({
-        data: "fake data"
+        txInput: new TransactionInput(),
       } as Transaction)],} as Block)
     block.mine(exampleDifficulty, exampleMiner);
     const valid = block.isValid(genesis.hash, genesis.index, exampleDifficulty);
@@ -36,7 +38,7 @@ describe("Block tests", () => {
   test("creates from block info", () => {
     const block = Block.fromBlockInfo({
       transactions: [new Transaction({
-        data: "Block 2",
+        txInput: new TransactionInput(),
       } as Transaction)], 
       difficulty: exampleDifficulty, 
       feePerTx: 1, 
@@ -64,11 +66,11 @@ describe("Block tests", () => {
       transactions: [
         new Transaction({
           type: TransactionType.FEE,
-          data: "fee 1"
+          txInput: new TransactionInput(),
         } as Transaction),
         new Transaction({
           type: TransactionType.FEE,
-          data: "fee 2"
+          txInput: new TransactionInput(),
         } as Transaction),
       ],} as Block)
     block.mine(exampleDifficulty, exampleMiner);
@@ -95,7 +97,7 @@ describe("Block tests", () => {
       previousHash: "", 
       transactions: [new Transaction(
           {
-            data: "fake data"
+            txInput: new TransactionInput(),
           } as Transaction)]
       } as Block)
     const valid = block.isValid(genesis.hash, genesis.index, exampleDifficulty);
@@ -109,7 +111,7 @@ describe("Block tests", () => {
       previousHash: 
       genesis.hash, 
       transactions: [new Transaction({
-        data: "fake data"
+        txInput: new TransactionInput(),
       } as Transaction)]
     } as Block)
     const valid = block.isValid(genesis.hash, genesis.index, exampleDifficulty);
@@ -121,7 +123,7 @@ describe("Block tests", () => {
       index: 1, 
       previousHash: "invalid.hash", 
       transactions: [new Transaction({
-        data: "fake data"
+        txInput: new TransactionInput(),
       } as Transaction)]
     } as Block)
     const valid = block.isValid(genesis.hash, genesis.index, exampleDifficulty);
@@ -133,7 +135,7 @@ describe("Block tests", () => {
       index: 1, 
       previousHash: genesis.hash, 
       transactions: [new Transaction({
-        data: "fake data"
+        txInput: new TransactionInput(),
       } as Transaction)]
     } as Block)
     block.timestamp = -1
@@ -147,7 +149,7 @@ describe("Block tests", () => {
       index: 1, 
       previousHash: genesis.hash, 
       transactions: [new Transaction({
-        data: "fake data"
+        txInput: new TransactionInput(),
       } as Transaction)]
     } as Block)
     block.mine(exampleDifficulty, exampleMiner);
@@ -158,12 +160,15 @@ describe("Block tests", () => {
     expect(valid.success).toBeFalsy();
   })
 
-  test("returns false to data", () => {
+  test("returns false to txInput", () => {
+    const txInput = new TransactionInput();
+    txInput.amount = -1;
+
     const block = new Block({
       index: 1, 
       previousHash: genesis.hash, 
       transactions: [new Transaction({
-        data: ""
+        txInput,
       } as Transaction)]
     } as Block)
     const valid = block.isValid(genesis.hash, genesis.index, exampleDifficulty); 
@@ -175,7 +180,7 @@ describe("Block tests", () => {
       index: 1, 
       previousHash: genesis.hash, 
       transactions: [new Transaction({
-        data: "fake data"
+        txInput: new TransactionInput(),
       } as Transaction)]
     } as Block)
     

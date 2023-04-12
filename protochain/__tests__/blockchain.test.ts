@@ -2,9 +2,11 @@ import { describe, test, expect, jest } from '@jest/globals'
 import { Block } from '../src/lib/block'
 import { Blockchain } from '../src/lib/blockchain'
 import Transaction from '../src/lib/transaction';
+import TransactionInput from '../src/lib/transaction-input';
 
 jest.mock('../src/lib/block');
 jest.mock('../src/lib/transaction');
+jest.mock('../src/lib/transaction-input');
 
 describe("Blockchain tests", () => {
   test("retuns genesis block", ()=> {
@@ -20,19 +22,22 @@ describe("Blockchain tests", () => {
 
     test("returns true with tree blocks", () => {
       const blockchain = new Blockchain();
+
       const secondBlock = new Block({
         index: 1, 
         previousHash: blockchain.blocks[0].hash, 
         transactions: [new Transaction({
-          data: "second block"
+          txInput: new TransactionInput(),
         } as Transaction)]
       } as Block);
+
       blockchain.addBlock(secondBlock)
+
       const lastBlock = new Block({
         index: 2, 
         previousHash: secondBlock.previousHash,
         transactions: [new Transaction({
-          data: "more data"
+          txInput: new TransactionInput(),
         } as Transaction)],
       } as Block);
       blockchain.addBlock(lastBlock);
@@ -44,7 +49,7 @@ describe("Blockchain tests", () => {
       const blockchain = new Blockchain();
 
       const tx = new Transaction({
-        data: "New data"
+        txInput: new TransactionInput(),
       } as Transaction);
 
       blockchain.mempool.push(tx);
@@ -67,7 +72,7 @@ describe("Blockchain tests", () => {
       const blockchain = new Blockchain();
 
       const tx = new Transaction({
-        data: "New data",
+        txInput: new TransactionInput(),
         hash: "xyz"
       } as Transaction);
 
@@ -76,11 +81,14 @@ describe("Blockchain tests", () => {
       expect(validation.success).toEqual(true);
     })
 
-    test("returns false with invalid data", () => {
+    test("returns false with invalid tx", () => {
       const blockchain = new Blockchain();
 
+      const txInput = new TransactionInput();
+      txInput.amount = -1;
+
       const tx = new Transaction({
-        data: "",
+        txInput,
         hash: "xyz"
       } as Transaction);
 
@@ -93,7 +101,7 @@ describe("Blockchain tests", () => {
       const blockchain = new Blockchain();
 
       const tx = new Transaction({
-        data: "tx1",
+        txInput: new TransactionInput(),
         hash: "xyz"
       } as Transaction);
 
@@ -109,7 +117,7 @@ describe("Blockchain tests", () => {
       const blockchain = new Blockchain();
   
       const tx = new Transaction({
-        data: "tx1",
+        txInput: new TransactionInput(),
         hash: "xyz"
       } as Transaction);
   
@@ -125,7 +133,7 @@ describe("Blockchain tests", () => {
       const blockchain = new Blockchain();
 
       const tx = new Transaction({
-        data: "New data",
+        txInput: new TransactionInput(),
         hash: "abc"
       } as Transaction);
 
@@ -140,7 +148,7 @@ describe("Blockchain tests", () => {
       const blockchain = new Blockchain();
 
       const tx = new Transaction({
-        data: "New data",
+        txInput: new TransactionInput(),
         hash: "xyz"
       } as Transaction);
 
@@ -168,7 +176,7 @@ describe("Blockchain tests", () => {
       const blockchain = new Blockchain();
       
       const tx = new Transaction({
-        data: "New data"
+        txInput: new TransactionInput(),
       } as Transaction);
 
       blockchain.mempool.push(tx);
@@ -178,7 +186,7 @@ describe("Blockchain tests", () => {
         previousHash: blockchain.blocks[0].hash, 
         transactions: [tx],
       } as Block));
-      console.log(result.message)
+
       expect(result.success).toEqual(true);
     })
 
@@ -188,7 +196,7 @@ describe("Blockchain tests", () => {
         index: -1, 
         previousHash: blockchain.blocks[0].hash, 
         transactions: [new Transaction({
-          data: "New data"
+          txInput: new TransactionInput()
         } as Transaction)],
       } as Block));
       expect(result.success).toEqual(false)

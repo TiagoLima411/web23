@@ -86,6 +86,9 @@ describe("Block tests", () => {
       transactions: [new Transaction()],
     } as Block)
     block.mine(exampleDifficulty, exampleMiner);
+  
+    block.transactions[0].to = "";
+
     const valid = block.isValid(genesis.hash, genesis.index, exampleDifficulty);
 
     expect(valid.success).toBeFalsy();

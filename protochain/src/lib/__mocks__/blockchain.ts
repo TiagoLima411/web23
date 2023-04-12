@@ -4,6 +4,7 @@ import BlockInfo from "../blockinfo";
 import Transaction from "./transaction";
 import { TransactionType } from "../transaction-type";
 import TransactionSearch from "../transaction-search";
+import TransactionInput from "./transaction-input";
 
 /**
  * Mocked Blockchain class
@@ -23,7 +24,7 @@ export class Blockchain {
       hash: "abc", 
       previousHash: '', 
       transactions: [new Transaction({
-        data: "tx1",
+        txInput: new TransactionInput(),
         type: TransactionType.FEE
       } as Transaction)],
       timestamp: Date.now()
@@ -82,7 +83,7 @@ export class Blockchain {
       maxDifficulty: 62,
       feePerTx: this.getFeePerTx(),
       transactions: [new Transaction({
-        data: new Date().toISOString()
+        txInput: new TransactionInput()
       } as Transaction)],
     }
   }

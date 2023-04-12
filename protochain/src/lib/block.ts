@@ -97,7 +97,7 @@ export class Block {
     const block = new Block();
     block.index = blockInfo.index;
     block.previousHash = blockInfo.previousHash;
-    block.transactions = blockInfo.transactions;
+    block.transactions = blockInfo.transactions.map(tx => new Transaction(tx));
     return block;
   }
 }

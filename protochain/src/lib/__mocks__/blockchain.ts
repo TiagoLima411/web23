@@ -79,7 +79,7 @@ export class Blockchain {
     return {
       index: this.blocks.length,
       previousHash: this.getLastBlock().hash,
-      difficulty: 0,
+      difficulty: 1,
       maxDifficulty: 62,
       feePerTx: this.getFeePerTx(),
       transactions: [new Transaction({

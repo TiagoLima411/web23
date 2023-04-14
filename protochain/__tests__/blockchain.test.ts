@@ -81,6 +81,25 @@ describe("Blockchain tests", () => {
       expect(validation.success).toEqual(true);
     })
 
+    test("returns false with pending tx", () => {
+      const blockchain = new Blockchain();
+
+      const tx = new Transaction({
+        txInput: new TransactionInput(),
+        hash: "xyz"
+      } as Transaction);
+
+      blockchain.addTransaction(tx);
+      
+      const tx2 = new Transaction({
+        txInput: new TransactionInput(),
+        hash: "xyz"
+      } as Transaction);
+
+      const validation = blockchain.addTransaction(tx2);
+      expect(validation.success).toEqual(false);
+    })
+
     test("returns false with invalid tx", () => {
       const blockchain = new Blockchain();
 
@@ -109,20 +128,6 @@ describe("Blockchain tests", () => {
         transactions: [tx]
       } as Block));
 
-      const validation = blockchain.addTransaction(tx);
-      expect(validation.success).toEqual(false);
-    })
-
-    test("returns false with duplicated in mempool", () => {
-      const blockchain = new Blockchain();
-  
-      const tx = new Transaction({
-        txInput: new TransactionInput(),
-        hash: "xyz"
-      } as Transaction);
-  
-      blockchain.mempool.push(tx)
-  
       const validation = blockchain.addTransaction(tx);
       expect(validation.success).toEqual(false);
     })

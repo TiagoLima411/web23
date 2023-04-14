@@ -25,6 +25,7 @@ export class Blockchain {
     this.blocks = [new Block({
       index: this.nextIndex, 
       previousHash: "", 
+      miner: "Tiago Alves",
       transactions: [new Transaction({
         type: TransactionType.FEE,
         txInput: new TransactionInput
@@ -44,7 +45,7 @@ export class Blockchain {
   addTransaction(transaction: Transaction): Validation {
     if (transaction.txInput) {
       const from = transaction.txInput.fromAddress;
-      const pendingTx = this.mempool.map(tx => tx.txInput).filter(txi => txi?.fromAddress === from);
+      const pendingTx = this.mempool.map(tx => tx.txInput).filter(txi => txi!.fromAddress === from);
       if (pendingTx && pendingTx.length)
         return new Validation(false, `This wallet has a pendind transaction.`);
 
@@ -57,9 +58,6 @@ export class Blockchain {
 
     if (this.blocks.some(b => b.transactions.some(tx => tx.hash === transaction.hash)))
       return new Validation(false, "Duplicated tx in blockchain.");
-
-    if (this.mempool.some(tx => tx.hash === transaction.hash))
-      return new Validation(false, "Duplicated tx in menpool.");
 
     this.mempool.push(transaction);
     return new Validation(true, transaction.hash);

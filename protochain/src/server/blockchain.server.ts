@@ -6,6 +6,7 @@ import morgan from 'morgan';
 import { Block } from '../lib/block';
 import { Blockchain } from '../lib/blockchain';
 import Transaction from '../lib/transaction';
+import TransactionOutput from '../lib/transaction-output';
 import Wallet from '../lib/wallet';
 
 /* c8 ignore next */
@@ -84,6 +85,22 @@ app.post('/transactions', (req: Request, res: Response, next: NextFunction) => {
     res.status(400).json(validation)
 })
 
-if (process.argv.includes("--run")) { app.listen(PORT, () => { console.log(`Blockchain is running at ${PORT}`);}) }
+app.get('/wallets/:wallet', (req: Request, res: Response, next: NextFunction) => {
+  const wallet = req.params.wallet;
+
+  //TODO: make real version to UTXO
+
+  return res.json({
+    balance: 10,
+    fee: blockchain.getFeePerTx(),
+    utxo: [new TransactionOutput({
+      amount: 10,
+      toAddress: wallet,
+      tx: 'abc'
+    } as TransactionOutput)]
+  })
+})
+
+if (process.argv.includes("--run")) { app.listen(PORT, () => { console.log(`Blockchain is running at ${PORT}. Wallet: ${wallet.publicKey} `)}) }
 
 export { app };

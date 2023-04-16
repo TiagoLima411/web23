@@ -17,18 +17,17 @@ export class Blockchain {
   /**
    * Creates a new mocked blockchain
   */
-  constructor(){
-    this.mempool = [];
-    this.blocks = [new Block(<Block>{
+  constructor(miner: string){
+    this.blocks = [];
+    this.mempool = [new Transaction()];
+
+    this.blocks = [new Block({
       index: 0, 
       hash: "abc", 
       previousHash: '', 
-      transactions: [new Transaction({
-        txInput: new TransactionInput(),
-        type: TransactionType.FEE
-      } as Transaction)],
+      miner,
       timestamp: Date.now()
-    })]
+    } as Block)]
 
     this.nextIndex++;
   }
@@ -55,15 +54,17 @@ export class Blockchain {
   }
 
   getTransaction(hash: string) : TransactionSearch {
+    if (hash === "-1")
+      return { mempoolIndex: -1, blockIndex: -1 } as TransactionSearch; 
+    
     return {
       mempoolIndex: 0,
-      transaction: {
-        hash
-      }
+      transaction: new Transaction(),
     } as TransactionSearch;
   }
 
   getBlock(hash: string): Block | undefined {
+    if (!hash || hash === "-1") return undefined;
     return this.blocks.find(block => block.hash === hash);
   }
 
@@ -77,14 +78,12 @@ export class Blockchain {
 
   getNextBlock() : BlockInfo {
     return {
-      index: this.blocks.length,
-      previousHash: this.getLastBlock().hash,
+      transactions: this.mempool.slice(0, 2),
       difficulty: 1,
-      maxDifficulty: 62,
+      previousHash: this.getLastBlock().hash,
+      index: this.blocks.length,
       feePerTx: this.getFeePerTx(),
-      transactions: [new Transaction({
-        txInput: new TransactionInput()
-      } as Transaction)],
-    }
+      maxDifficulty: 62,
+    } as BlockInfo;
   }
 }

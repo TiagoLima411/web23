@@ -4,12 +4,14 @@ import { app } from '../src/server/blockchain.server';
 import { Block } from '../src/lib/block';
 import Transaction from '../src/lib/transaction';
 import TransactionInput from '../src/lib/transaction-input';
+import TransactionOutput from '../src/lib/transaction-output';
 
 
 jest.mock('../src/lib/block');
 jest.mock('../src/lib/blockchain');
 jest.mock('../src/lib/transaction');
 jest.mock('../src/lib/transaction-input');
+jest.mock('../src/lib/transaction-output');
 
 describe('Blockchain Server Tests', () => {
   describe('GET /status',() => {
@@ -84,8 +86,8 @@ describe('Blockchain Server Tests', () => {
   describe('POST /transactions', () => {
     test('returns created', async () => {
       const tx = new Transaction({
-        txInput: new TransactionInput(),
-        to: 'walletto' 
+        txInputs: [new TransactionInput()],
+        txOutputs: [new TransactionOutput()] 
       } as Transaction);
 
       const response = await request(app).post('/transactions/').send(tx);

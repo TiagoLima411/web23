@@ -13,12 +13,41 @@ describe("TransactionOutput tests", () => {
   })
 
   test("returns true", () => {
-    const txInput = new TransactionOutput({
+    const txOutput = new TransactionOutput({
       amount: 10,
-      toAddress: alice.publicKey
+      toAddress: alice.publicKey,
+      tx: "abc",
     } as TransactionOutput);
 
-    const valid = txInput.isValid()
+    const valid = txOutput.isValid()
     expect(valid.success).toBeTruthy();
+  })
+
+  test("returns true with default values", () => {
+    const txOutput = new TransactionOutput();
+    const valid = txOutput.isValid()
+    expect(valid.success).toBeFalsy();
+  })
+
+  test("returns false", () => {
+    const txOutput = new TransactionOutput({
+      amount: -10,
+      toAddress: alice.publicKey,
+      tx: "abc",
+    } as TransactionOutput);
+
+    const valid = txOutput.isValid()
+    expect(valid.success).toBeFalsy();
+  })
+
+  test("returns hash", () => {
+    const txOutput = new TransactionOutput({
+      amount: 10,
+      toAddress: alice.publicKey,
+      tx: "abc",
+    } as TransactionOutput);
+
+    const hash = txOutput.getHash()
+    expect(hash).toBeTruthy();
   })
 })

@@ -18,6 +18,32 @@ describe("Transaction tests", () => {
     expect(valid.success).toBeTruthy();
   })
 
+  test("returns false (txo hash != tx hash)", () => {
+    const tx = new Transaction({
+      txInputs: [new TransactionInput()],
+      txOutputs: [new TransactionOutput()]
+    } as Transaction);
+    
+    tx.txOutputs[0].tx = 'xpto';
+
+    const valid = tx.isValid();
+    expect(valid.success).toBeFalsy();
+  })
+
+  test("returns false (inputs < outputs)", () => {
+    const tx = new Transaction({
+      txInputs: [new TransactionInput({
+        amount: 1,
+      } as TransactionInput)],
+      txOutputs: [new TransactionOutput({
+        amount: 2
+      } as TransactionOutput)]
+    } as Transaction);
+    
+    const valid = tx.isValid();
+    expect(valid.success).toBeFalsy();
+  })
+
   test("returns false (invalid hash)", () => {
     const tx = new Transaction({
       txInputs: [new TransactionInput()],

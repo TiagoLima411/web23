@@ -5,7 +5,7 @@ import Validation from "../validation";
  * Mocked block class
 */
 
-export class Block {
+export default class Block {
   index: number;
   timestamp : number;
   hash: string;
@@ -38,8 +38,8 @@ export class Block {
    * Validates the mock block
    * @returns Returns if the mock block is valid
   */
-  isValid(previousHash: string, previousIndex: number): Validation {
-    if(!previousHash || previousIndex < 0 || this.index < 0)
+  isValid(previousHash: string, previousIndex: number, feePerTx: number): Validation {
+    if(!previousHash || previousIndex < 0 || this.index < 0 || feePerTx < 1)
       return new Validation(false, "Invalid mock block.");
 
     return new Validation();

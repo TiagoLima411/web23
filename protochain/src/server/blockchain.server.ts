@@ -3,7 +3,7 @@ dotenv.config();
 
 import express, { NextFunction, Request, Response } from 'express';
 import morgan from 'morgan';
-import { Block } from '../lib/block';
+import Block from '../lib/block';
 import { Blockchain } from '../lib/blockchain';
 import Transaction from '../lib/transaction';
 import TransactionOutput from '../lib/transaction-output';

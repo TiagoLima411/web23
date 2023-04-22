@@ -1,4 +1,4 @@
-import { Block } from "./block";
+import Block from "./block";
 import Validation from "../validation";
 import BlockInfo from "../blockinfo";
 import Transaction from "./transaction";
@@ -46,7 +46,7 @@ export class Blockchain {
   }
 
   addTransaction(transaction: Transaction) : Validation {
-    const validation = transaction.isValid();
+    const validation = transaction.isValid(1, 10);
     if (!validation.success) return validation;
 
     this.mempool.push(transaction);

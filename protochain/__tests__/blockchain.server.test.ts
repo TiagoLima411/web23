@@ -1,7 +1,7 @@
 import request from 'supertest';
 import { describe, test, expect, jest } from "@jest/globals";
 import { app } from '../src/server/blockchain.server';
-import { Block } from '../src/lib/block';
+import Block from '../src/lib/block';
 import Transaction from '../src/lib/transaction';
 import TransactionInput from '../src/lib/transaction-input';
 import TransactionOutput from '../src/lib/transaction-output';

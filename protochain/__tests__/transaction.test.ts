@@ -8,13 +8,16 @@ jest.mock('../src/lib/transaction-input');
 jest.mock('../src/lib/transaction-output');
 
 describe("Transaction tests", () => {
+  const exampleDifficulty: number = 1;
+  const exampleFee: number = 1;
+
   test("returns true (REGULAR default)", () => {
     const tx = new Transaction({
       txInputs: [new TransactionInput()],
       txOutputs: [new TransactionOutput()]
     } as Transaction)
     
-    const valid = tx.isValid();
+    const valid = tx.isValid(exampleDifficulty, exampleFee);
     expect(valid.success).toBeTruthy();
   })
 
@@ -26,7 +29,7 @@ describe("Transaction tests", () => {
     
     tx.txOutputs[0].tx = 'xpto';
 
-    const valid = tx.isValid();
+    const valid = tx.isValid(exampleDifficulty, exampleFee);
     expect(valid.success).toBeFalsy();
   })
 
@@ -40,7 +43,7 @@ describe("Transaction tests", () => {
       } as TransactionOutput)]
     } as Transaction);
     
-    const valid = tx.isValid();
+    const valid = tx.isValid(exampleDifficulty, exampleFee);
     expect(valid.success).toBeFalsy();
   })
 
@@ -53,7 +56,7 @@ describe("Transaction tests", () => {
       hash: "abc",
     } as Transaction)
     
-    const valid = tx.isValid();
+    const valid = tx.isValid(exampleDifficulty, exampleFee);
     expect(valid.success).toBeFalsy();
   })
 
@@ -66,13 +69,13 @@ describe("Transaction tests", () => {
     tx.txInputs = undefined;
     tx.hash = tx.getHash();
     
-    const valid = tx.isValid();
+    const valid = tx.isValid(exampleDifficulty, exampleFee);
     expect(valid.success).toBeTruthy();
   })
 
   test("returns false for invalid to", () => {
     const tx = new Transaction()
-    const valid = tx.isValid();
+    const valid = tx.isValid(exampleDifficulty, exampleFee);
     expect(valid.success).toBeFalsy();
   })
 
@@ -88,7 +91,7 @@ describe("Transaction tests", () => {
       ]
     } as Transaction);
 
-    const valid = tx.isValid();
+    const valid = tx.isValid(exampleDifficulty, exampleFee);
     expect(valid.success).toBeFalsy();
   })
 })

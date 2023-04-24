@@ -82,7 +82,7 @@ export default class Transaction {
     if (this.type === TransactionType.FEE) {
       const txo = this.txOutputs[0];
       if(txo.amount > Blockchain.getRewardAmount(difficulty) + totalFees)
-        return new Validation(false, `Invalid tx `)
+        return new Validation(false, `Invalid tx reward`);
     }
     return new Validation();
   }

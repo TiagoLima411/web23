@@ -12,10 +12,11 @@ jest.mock('../src/lib/transaction');
 jest.mock('../src/lib/transaction-input');
 
 describe("Blockchain tests", () => {
-  let alice: Wallet;
+  let alice: Wallet, bob: Wallet;
 
   beforeAll(() => {
     alice = new Wallet();
+    bob = new Wallet();
   })
 
   test("retuns genesis block", ()=> {
@@ -100,51 +101,78 @@ describe("Blockchain tests", () => {
       expect(validation.success).toEqual(true);
     })
 
-    test("returns false with pending tx", () => {
+    test("returns false (invalid UTXO)", () => {
       const blockchain = new Blockchain(alice.publicKey);
 
-      const tx = new Transaction({
-        txInputs: [new TransactionInput()],
-        hash: "xyz"
-      } as Transaction);
+      const tx = new Transaction();
+      tx.hash = 'tx'
+      tx.txInputs = [new TransactionInput({
+        amount: 10,
+        previousTx: 'wrong',
+        fromAddress: alice.publicKey,
+        signature: 'abc',
+      } as TransactionInput)];
 
-      blockchain.addTransaction(tx);
-      
-      const tx2 = new Transaction({
-        txInputs: [new TransactionInput()],
-        hash: "xyz"
-      } as Transaction);
+      tx.txOutputs = [new TransactionOutput({
+        amount: 10,
+        toAddress: 'abc',
+      } as TransactionOutput)];
 
-      const validation = blockchain.addTransaction(tx2);
+      const validation = blockchain.addTransaction(tx);
+      expect(validation.success).toBeFalsy();
+    })
+
+    test("returns false (pending tx)", () => {
+      const blockchain = new Blockchain(alice.publicKey);
+
+      const tx = new Transaction();
+      tx.hash = 'tx';
+      tx.txInputs = [new TransactionInput({
+        amount: 10,
+        previousTx: 'xyz',
+        fromAddress: alice.publicKey,
+        signature: 'abc',
+      } as TransactionInput)]
+
+      tx.txOutputs = [new TransactionOutput({
+        amount: 10,
+        toAddress: 'abc',
+      } as TransactionOutput)]
+
+      blockchain.mempool.push(tx);
+
+      const validation = blockchain.addTransaction(tx);
       expect(validation.success).toEqual(false);
     })
 
-    test("returns false with invalid tx", () => {
+    test("returns false (invalid tx)", () => {
       const blockchain = new Blockchain(alice.publicKey);
+      const txo = blockchain.blocks[0].transactions[0];
 
-      const tx = new Transaction({
-        txInputs: [new TransactionInput()],
-        hash: "xyz",
-        timestamp: -1,
-      } as Transaction);
+      const tx = new Transaction();
+      tx.hash = 'tx';
+      tx.timestamp = -1;
+      tx.txInputs = [new TransactionInput({
+        amount: 10,
+        previousTx: txo.hash,
+        fromAddress: alice.publicKey,
+        signature: 'abc',
+      } as TransactionInput)]
+
+      tx.txOutputs = [new TransactionOutput({
+        amount: 10,
+        toAddress: 'abc',
+      } as TransactionOutput)]
+
 
       const validation = blockchain.addTransaction(tx);
       
       expect(validation.success).toEqual(false);
     })
 
-    test("returns false with duplicated in blockchain", () => {
+    test("returns false (duplicated in blockchain)", () => {
       const blockchain = new Blockchain(alice.publicKey);
-
-      const tx = new Transaction({
-        txInputs: [new TransactionInput()],
-        hash: "xyz"
-      } as Transaction);
-
-      blockchain.blocks.push(new Block({
-        transactions: [tx]
-      } as Block));
-
+      const tx = blockchain.blocks[0].transactions[0];
       const validation = blockchain.addTransaction(tx);
       expect(validation.success).toEqual(false);
     })
@@ -277,6 +305,55 @@ describe("Blockchain tests", () => {
       const blochain = new Blockchain(alice.publicKey);
       const info = blochain.getNextBlock();
       expect(info).toBeNull();
+    })
+  })
+
+  describe(".getBalance", () => {
+    test("returns balance", () => {
+      const blockchain = new Blockchain(alice.publicKey);
+      const balance = blockchain.getBalance(alice.publicKey);
+      expect(balance).toBeGreaterThan(0);
+    })
+
+    test("returns zero balance", () => {
+      const blockchain = new Blockchain(alice.publicKey);
+      const balance = blockchain.getBalance(bob.publicKey);
+      expect(balance).toEqual(0);
+    })
+  })
+
+  describe(".getUtxo", () => {
+    test("returns utxo", () => {
+      const blockchain = new Blockchain(alice.publicKey);
+      const txo = blockchain.blocks[0].transactions[0];
+
+      const tx = new Transaction();
+      tx.hash = 'tx'
+      tx.txInputs = [new TransactionInput({
+        amount: 10,
+        previousTx: txo.hash,
+        fromAddress: alice.publicKey,
+        signature: 'abc',
+      } as TransactionInput)];
+
+      tx.txOutputs = [
+        new TransactionOutput({
+          amount: 5,
+          toAddress: 'abc',
+        } as TransactionOutput),
+        new TransactionOutput({
+          amount: 4,
+          toAddress: alice.publicKey,
+        } as TransactionOutput)
+      ];
+
+      blockchain.blocks.push(new Block({
+        index: 1,
+        transactions: [tx]
+      } as Block))
+
+      const utxo = blockchain.getUtxo(alice.publicKey);
+      expect(utxo.length).toBeGreaterThan(0);
     })
   })
 })

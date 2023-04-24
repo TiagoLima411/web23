@@ -51,13 +51,9 @@ export default class Block {
   mine(difficulty: number, miner: string) {
     this.miner = miner;
     const prefix = new Array(difficulty + 1).join("0");
-    console.log("prefix: ",prefix)
     do {
-
       this.nonce++;
-      console.log("nonce: ",this.nonce);
       this.hash = this.getHash();
-      console.log("Hash: ",this.hash);
     }
     while (!this.hash.startsWith(prefix)); 
   }

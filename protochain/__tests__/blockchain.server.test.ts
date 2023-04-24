@@ -83,6 +83,15 @@ describe('Blockchain Server Tests', () => {
     })
   });
 
+  describe('GET /wallets/:wallet', () => {
+    test('returns wallet', async () => {
+      const response = await request(app).get('/wallets/abc');
+  
+      expect(response.status).toEqual(200)
+      expect(response.body.balance).toEqual(10)
+    })
+  });
+
   describe('POST /transactions', () => {
     test('returns created', async () => {
       const tx = new Transaction({

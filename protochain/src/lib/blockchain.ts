@@ -186,7 +186,7 @@ export class Blockchain {
 
     txIns.forEach(txi => {
       const index = txOuts.findIndex(txo => txo?.amount === txi!.amount);
-      txOuts.splice(index, 1)
+      txOuts.splice(index, 1);
     })
 
     return txOuts;
